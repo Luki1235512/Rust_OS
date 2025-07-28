@@ -4,8 +4,8 @@
 #![test_runner(rust_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use rust_os::println;
 use core::panic::PanicInfo;
+use rust_os::println;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
@@ -13,7 +13,11 @@ pub extern "C" fn _start() -> ! {
 
     rust_os::init();
 
-    x86_64::instructions::interrupts::int3();
+    fn stack_overflow() {
+        stack_overflow();
+    }
+
+    // stack_overflow();
 
     #[cfg(test)]
     test_main();
@@ -22,6 +26,7 @@ pub extern "C" fn _start() -> ! {
     loop {}
 }
 
+/// This function is called on panic.
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
